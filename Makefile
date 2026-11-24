@@ -73,7 +73,7 @@ endif
 
 # GNOME replaces an installed version that extensions.gnome.org doesn't know with the released one,
 # but leaves an extension without a version alone
-user-install: METADATA_FILTER = s/,[[:space:]]*"version":[[:space:]]*[0-9]+//
+user-install: METADATA_FILTER = s/,[[:space:]]*"version":[[:space:]]*[0-9]+(\.[0-9]+)?//
 user-install: pack
 	rm -rf "$${XDG_DATA_HOME:-$$HOME/.local/share}/gnome-shell/extension-updates/$(UUID)"
 	gnome-extensions install -f build/$(UUID).shell-extension.zip
