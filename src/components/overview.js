@@ -89,7 +89,9 @@ export const OverviewBlur = class OverviewBlur {
                 && overview_blur.active_patch_generation === generation
                 && !had_switch
             )
-                overview_blur.prepare_workspace_switch();
+                overview_blur.prepare_workspace_switch(
+                    this._switchData.monitors.map(group => group.index)
+                );
             return result;
         };
         this._patched_FinishSwitch = function (...params) {
@@ -153,7 +155,9 @@ export const OverviewBlur = class OverviewBlur {
         );
     }
 
-    prepare_workspace_switch() {
+    /// The shell only animates the monitors that switch workspaces, which leaves out the other
+    /// monitors when workspaces are on the primary display only.
+    prepare_workspace_switch(switching_monitors) {
         this._log("prepare workspace switch");
         this.finish_workspace_switch();
 
@@ -162,10 +166,8 @@ export const OverviewBlur = class OverviewBlur {
             global.window_group
         );
 
-        const only_on_primary = Meta.prefs_get_workspaces_only_on_primary();
         this.animation_background_group.get_children().forEach(background => {
-            background.visible = !only_on_primary
-                || background.monitorIndex === Main.layoutManager.primaryIndex;
+            background.visible = switching_monitors.includes(background.monitorIndex);
         });
     }
 
